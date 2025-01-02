@@ -51,3 +51,4 @@ flutter run
 
 - provider cocok di gunakan untuk mengerjakan tes ini, karena banyak perubahan manual dari FRONT END tanpa adanya data API dari Back End.
 - sehingga sangat memungkin kan untuk kerapihan code menggunakan provider.# tes_pilarmedia_indonesia
+# pilarmedia_indonesia
