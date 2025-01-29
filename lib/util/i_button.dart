@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tes_pilarmedia_indonesia/util/context_extensions.dart';
+import 'package:tes_sekai/util/context_extensions.dart';
 
 import '../../../theme/i_colors.dart';
 import 'i_text.dart';

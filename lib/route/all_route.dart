@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:tes_pilarmedia_indonesia/route/app_route.dart';
+import 'package:tes_sekai/route/app_route.dart';
 
 import 'base_route.dart';
 

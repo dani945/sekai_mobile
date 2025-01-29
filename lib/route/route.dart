@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../module/home/home_view.dart';
+import '../module/login/login_view.dart';
 import 'all_route.dart';
 
 enum RouteType { push, pushReplace, pushRemove }
 
-const initialRoute = HomeView.routeName;
+const initialRoute = LoginView.routeName;
 // const initialRoute = Aktifasi.routeName;
 
 //====GENERATE ROUTES====

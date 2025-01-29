@@ -1,4 +1,4 @@
-# tes_pilarmedia_indonesia
+# tes_sekai
 
 A new Flutter project.
 
@@ -50,5 +50,5 @@ flutter run
 ### PENJELASAN PEMILIHAN ARSITEKTUR
 
 - provider cocok di gunakan untuk mengerjakan tes ini, karena banyak perubahan manual dari FRONT END tanpa adanya data API dari Back End.
-- sehingga sangat memungkin kan untuk kerapihan code menggunakan provider.# tes_pilarmedia_indonesia
+- sehingga sangat memungkin kan untuk kerapihan code menggunakan provider.# tes_sekai
 # pilarmedia_indonesia

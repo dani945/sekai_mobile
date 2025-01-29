@@ -1,4 +1,4 @@
-name: tes_pilarmedia_indonesia
+name: tes_sekai
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -38,10 +38,11 @@ dependencies:
   provider: 6.1.2
   shared_preferences: ^2.2.3
   syncfusion_flutter_datepicker: 22.2.9
-  hive_flutter: ^1.1.0
-  hive: ^2.2.3
   intl: ^0.18.1
-
+  dio: ^5.3.2
+  flutter_easyloading: ^3.0.5
+  crypto: ^3.0.3
+  qr_code_scanner: 1.0.1
 
 dev_dependencies:
   flutter_test:

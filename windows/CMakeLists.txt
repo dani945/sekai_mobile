@@ -1,10 +1,10 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(tes_pilarmedia_indonesia LANGUAGES CXX)
+project(tes_sekai LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "tes_pilarmedia_indonesia")
+set(BINARY_NAME "tes_sekai")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

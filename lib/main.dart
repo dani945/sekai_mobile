@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import 'route/all_route.dart';
@@ -13,11 +13,6 @@ import 'util/i_constant.dart';
 Future<void> main() async {
   AllRoute().getKey();
   WidgetsFlutterBinding.ensureInitialized();
-  // Inisialisasi Hive
-  await Hive.initFlutter();
-
-  // Buka atau buat kotak (box)
-  await Hive.openBox('myBox');
 
   var theme = await IStorage.getString(IConstant.themeMode);
   runApp(
@@ -71,6 +66,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       navigatorObservers: [
         IRouteObserver(),
       ],
+      builder: EasyLoading.init(),
     );
   }
 }

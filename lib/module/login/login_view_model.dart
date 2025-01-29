@@ -1,280 +1,88 @@
-import 'dart:developer';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:tes_sekai/module/buat_task/buat_task_view.dart';
-import 'package:tes_sekai/module/model_data.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tes_sekai/route/route.dart';
 
-import '../../theme/i_theme.dart';
+import '../../storage/i_storage.dart';
+import '../../util/app_utils.dart';
+import '../../util/i_constant.dart';
+import '../home/home_view.dart';
+import '../informasi_toko/informasi_toko_view.dart';
+import 'service/login_service.dart';
 
-class HomeViewModel extends ChangeNotifier {
-  HomeViewModel(BuildContext context) {
+class LoginViewModel extends ChangeNotifier {
+  LoginViewModel(BuildContext context) {
     initPage(context);
   }
 
-  final box = Hive.box('myBox');
-  List<ModelData> dataWork = [];
-  List<ModelData> dataPersonal = [];
-  List<ModelData> dataUrgent = [];
+  TextEditingController controllerEmail = TextEditingController();
+  TextEditingController controllerPassword = TextEditingController();
 
-  List<ModelData> dataWorkTemp = [];
-  List<ModelData> dataPersonalTemp = [];
-  List<ModelData> dataUrgentTemp = [];
+  bool isVisiblePass = true;
 
-  TextEditingController controllerSearchWork = TextEditingController();
-  TextEditingController controllerSearchPersonal = TextEditingController();
-  TextEditingController controllerSearchUrgent = TextEditingController();
+  String? errorEmail;
 
-  void initPage(BuildContext context) {
-    readData();
+  void initPage(BuildContext context) {}
+
+  @override
+  void dispose() {
+    controllerEmail.dispose();
+    controllerPassword.dispose();
+    super.dispose();
   }
 
-  Future<void> toBuatTask(BuildContext context, {Map<String, dynamic>? argument}) async {
-    final res = await goToNamed(context, routeName: BuatTaskView.routeName, arguments: argument);
-
-    if (res != null) {
-      if (res == true) {
-        readData();
-      }
-    }
+  void tapVisiblePass() {
+    isVisiblePass = !isVisiblePass;
+    notifyListeners();
   }
 
-  void readData() {
-    dataWork.clear();
-    dataPersonal.clear();
-    dataUrgent.clear();
-
-    dataWorkTemp.clear();
-    dataPersonalTemp.clear();
-    dataUrgentTemp.clear();
-
-    final data = box.listenable();
-
-    for (var i = 0; i < data.value.values.length; i++) {
-      switch (data.value.values.elementAt(i)["category"]) {
-        case "1":
-          dataWork.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          dataWorkTemp.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          notifyListeners();
-
-          break;
-
-        case "2":
-          dataPersonal.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          dataPersonalTemp.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          notifyListeners();
-          break;
-
-        case "3":
-          dataUrgent.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          dataUrgentTemp.add(ModelData.fromJson(data.value.values.elementAt(i)));
-          notifyListeners();
-          break;
-
-        default:
-          log("Weather is unpredictable.");
-      }
-    }
+  void toRegisterForm(BuildContext context) {
+    goToNamed(context, routeName: InformasiTokoView.routeName, arguments: {
+      "readonlyForm": false,
+    });
   }
 
-  void actionButton(
-    BuildContext context, {
-    required String val,
-    required int index,
-    required String option,
-    required int id,
-  }) async {
-    switch (val) {
-      case "edit":
-        toBuatTask(context, argument: {
-          "dataWork": dataWork.isNotEmpty ? dataWork[index] : null,
-          "dataPersonal": dataPersonal.isNotEmpty ? dataPersonal[index] : null,
-          "dataUrgent": dataUrgent.isNotEmpty ? dataUrgent[index] : null,
-          "option": option,
+  Future<void> submitLogin(BuildContext context) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await EasyLoading.show(
+        status: 'loading...',
+        maskType: EasyLoadingMaskType.black,
+      );
+    });
+
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (controllerEmail.text.isNotEmpty && controllerPassword.text.isNotEmpty) {
+      if (AppUtils.isValidEmail(controllerEmail.text).isNotEmpty) {
+        errorEmail = AppUtils.isValidEmail(controllerEmail.text);
+        notifyListeners();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+          EasyLoading.dismiss();
         });
-        break;
+        return;
+      }
 
-      case "set_pending":
-        updateData(
-          context,
-          index: index,
-          category: option,
-          status: "pending",
-          id: id,
+      var res = await LoginServices.postLogin(
+        context,
+        email: controllerEmail.text,
+        password: controllerPassword.text,
+      );
+      if (res.response ?? false) {
+        IStorage.setString(
+          IConstant.cookiesUser,
+          jsonEncode(res.data?.toJson()),
         );
-        notifyListeners();
-        break;
 
-      case "set_complete":
-        updateData(
-          context,
-          index: index,
-          category: option,
-          status: "complete",
-          id: id,
-        );
-        notifyListeners();
-        break;
-
-      case "delete":
-        delete(id: id);
-        notifyListeners();
-        break;
-
-      default:
-        log("Weather is unpredictable.");
-    }
-  }
-
-  void updateData(
-    BuildContext context, {
-    required int index,
-    required String category,
-    required String status,
-    required int id,
-  }) {
-    switch (category) {
-      case "1":
-        final datalist = dataWork[index];
-        if (datalist.judulTugas.isNotEmpty && datalist.deskripsi.isNotEmpty && datalist.tanggalJatuhTempo.isNotEmpty && category.isNotEmpty) {
-          final data = {
-            'id': id,
-            'judulTugas': datalist.judulTugas,
-            'deskripsi': datalist.deskripsi,
-            'tanggalJatuhTempo': datalist.tanggalJatuhTempo,
-            'category': category,
-            'status': status,
-          };
-          box.put(id, data);
-
-          readData();
-          notifyListeners();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Semua Harus di isi'),
-            ),
-          );
-        }
-        break;
-
-      case "2":
-        final datalist = dataPersonal[index];
-        if (datalist.judulTugas.isNotEmpty && datalist.deskripsi.isNotEmpty && datalist.tanggalJatuhTempo.isNotEmpty && category.isNotEmpty) {
-          final data = {
-            'id': id,
-            'judulTugas': datalist.judulTugas,
-            'deskripsi': datalist.deskripsi,
-            'tanggalJatuhTempo': datalist.tanggalJatuhTempo,
-            'category': category,
-            'status': status,
-          };
-          box.put(id, data);
-
-          readData();
-          notifyListeners();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Semua Harus di isi'),
-            ),
-          );
-        }
-        break;
-
-      case "3":
-        final datalist = dataUrgent[index];
-        if (datalist.judulTugas.isNotEmpty && datalist.deskripsi.isNotEmpty && datalist.tanggalJatuhTempo.isNotEmpty && category.isNotEmpty) {
-          final data = {
-            'id': id,
-            'judulTugas': datalist.judulTugas,
-            'deskripsi': datalist.deskripsi,
-            'tanggalJatuhTempo': datalist.tanggalJatuhTempo,
-            'category': category,
-            'status': status,
-          };
-          box.put(id, data);
-
-          readData();
-          notifyListeners();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Semua Harus di isi'),
-            ),
-          );
-        }
-        break;
-
-      default:
-        log("Weather is unpredictable.");
-    }
-  }
-
-  void delete({required int id}) {
-    box.delete(id);
-    readData();
-  }
-
-  // Fungsi untuk melakukan pencarian
-  Future<void> search(String val, {required String category}) async {
-    switch (category) {
-      case "1":
-        if (val.isNotEmpty) {
-          dataWork = dataWorkTemp.where((element) => (element.judulTugas.toLowerCase().contains(val.toLowerCase()))).toList();
-
-          notifyListeners();
-        } else {
-          dataWork = dataWorkTemp;
-
-          notifyListeners();
-        }
-        break;
-
-      case "2":
-        if (val.isNotEmpty) {
-          dataPersonal = dataPersonalTemp.where((element) => (element.judulTugas.toLowerCase().contains(val.toLowerCase()))).toList();
-
-          notifyListeners();
-        } else {
-          dataPersonal = dataPersonalTemp;
-
-          notifyListeners();
-        }
-        break;
-
-      case "3":
-        if (val.isNotEmpty) {
-          dataUrgent = dataUrgentTemp.where((element) => (element.judulTugas.toLowerCase().contains(val.toLowerCase()))).toList();
-
-          notifyListeners();
-        } else {
-          dataUrgent = dataUrgentTemp;
-
-          notifyListeners();
-        }
-        break;
-
-      default:
-        log("Weather is unpredictable.");
-    }
-  }
-
-  void setTheme(BuildContext context, {required String val}) {
-    var theme = context.read<IThemeController>();
-    switch (val) {
-      case "light":
-        theme.changeTheme(IThemeStyle.light);
-        break;
-
-      case "dark":
-        theme.changeTheme(IThemeStyle.dark);
-        break;
-
-      default:
-        log("Weather is unpredictable.");
+        EasyLoading.dismiss();
+        if (!context.mounted) return;
+        goToNamed(context, routeName: HomeView.routeName, routeType: RouteType.pushRemove);
+      } else {
+        EasyLoading.dismiss();
+      }
+    } else {
+      EasyLoading.dismiss();
+      AppUtils.showSnackbar(context, message: "isikan username dan password");
     }
   }
 }

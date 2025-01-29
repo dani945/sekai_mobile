@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "tes_pilarmedia_indonesia" "\0"
+            VALUE "FileDescription", "tes_sekai" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "tes_pilarmedia_indonesia" "\0"
+            VALUE "InternalName", "tes_sekai" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "tes_pilarmedia_indonesia.exe" "\0"
-            VALUE "ProductName", "tes_pilarmedia_indonesia" "\0"
+            VALUE "OriginalFilename", "tes_sekai.exe" "\0"
+            VALUE "ProductName", "tes_sekai" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
