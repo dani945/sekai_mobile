@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:tes_pilarmedia_indonesia/module/buat_task/buat_task_view.dart';
-import 'package:tes_pilarmedia_indonesia/module/model_data.dart';
-import 'package:tes_pilarmedia_indonesia/route/route.dart';
+import 'package:tes_sekai/module/buat_task/buat_task_view.dart';
+import 'package:tes_sekai/module/model_data.dart';
+import 'package:tes_sekai/route/route.dart';
 
 import '../../theme/i_theme.dart';
 
